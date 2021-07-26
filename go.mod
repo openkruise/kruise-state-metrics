@@ -14,5 +14,5 @@ require (
 	k8s.io/autoscaler/vertical-pod-autoscaler v0.9.2
 	k8s.io/client-go v0.21.2
 	k8s.io/klog/v2 v2.9.0
-	k8s.io/kube-state-metrics/v2 v2.1.1-0.20210714123226-1d61fc146160
+	k8s.io/kube-state-metrics/v2 v2.1.1-0.20210723141916-58869f0c5e2e
 )
