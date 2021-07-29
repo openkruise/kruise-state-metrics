@@ -199,7 +199,7 @@ func availableResources() []string {
 }
 
 func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch)
+	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.kubeClient, b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch)
 }
 
 func (b *Builder) buildKruiseStores(

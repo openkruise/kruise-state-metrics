@@ -16,3 +16,5 @@ require (
 	k8s.io/klog/v2 v2.9.0
 	k8s.io/kube-state-metrics/v2 v2.1.1-0.20210714123226-1d61fc146160
 )
+
+// replace "github.com/openkruise/kruise/apis/apps/v1alpha1" => "../kruise"
