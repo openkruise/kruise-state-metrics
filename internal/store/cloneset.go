@@ -17,9 +17,9 @@ import (
 	"context"
 
 	"github.com/openkruise/kruise-api/apps/v1alpha1"
-	clonesetcore "github.com/openkruise/kruise/pkg/controller/cloneset/core"
-	clonesetutils "github.com/openkruise/kruise/pkg/controller/cloneset/utils"
-	"github.com/openkruise/kruise/pkg/util/fieldindex"
+	// clonesetcore "github.com/openkruise/kruise/pkg/controller/cloneset/core"
+	// clonesetutils "github.com/openkruise/kruise/pkg/controller/cloneset/utils"
+	// "github.com/openkruise/kruise/pkg/util/fieldindex"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
@@ -274,45 +274,46 @@ func cloneSetMetricFamilies(Client clientset.Interface, allowLabelsList []string
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
-
 							Value: float64(calculateUnavailableReplicas(cs, Client)),
 						},
 					},
 				}
 			}),
 		),
-		// TODO
-		// *generator.NewFamilyGenerator(
-		// 	"kruise_cloneset_spec_strategy_partition",
-		// 	"Number of desired pods for a cloneset.",
-		// 	metric.Gauge,
-		// 	"",
-		// 	wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-		// 		return &metric.Family{
-		// 			Metrics: []*metric.Metric{
-		// 				{
-		// 					Value: float64(cs.Status.UpdatedReadyReplicas),
-		// 				},
-		// 			},
-		// 		}
-		// 	}),
-		// ),
-		// // TODO
-		// *generator.NewFamilyGenerator(
-		// 	"kruise_cloneset_spec_strategy_type",
-		// 	"Number of desired pods for a cloneset.",
-		// 	metric.Gauge,
-		// 	"",
-		// 	wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-		// 		return &metric.Family{
-		// 			Metrics: []*metric.Metric{
-		// 				{
-		// 					Value: float64(cs.Status.UpdatedReadyReplicas),
-		// 				},
-		// 			},
-		// 		}
-		// 	}),
-		// ),
+		*generator.NewFamilyGenerator(
+			"kruise_cloneset_spec_strategy_partition",
+			"Number of desired pods for a cloneset.",
+			metric.Gauge,
+			"",
+			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
+				if cs.Spec.UpdateStrategy.Partition == nil {
+					return &metric.Family{}
+				}
+
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							Value: float64(cs.Spec.UpdateStrategy.Partition),
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
+			"kruise_cloneset_spec_strategy_type",
+			"Number of desired pods for a cloneset.",
+			metric.Gauge,
+			"",
+			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							Value: float64(cs.Spec.UpdateStrategy.Type),
+						},
+					},
+				}
+			}),
+		),
 	}
 }
 
