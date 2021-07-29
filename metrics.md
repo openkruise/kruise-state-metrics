@@ -3,15 +3,14 @@
 - kruise_cloneset_status_replicas_available  ready and available Pod 数量 (满足 minReadySeconds)
 - kruise_cloneset_status_replicas_updated  最新版本的 Pod 数量
 - kruise_cloneset_status_observed_generation
-- kruise_cloneset_status_condition
 - kruise_cloneset_spec_replicas  Number of desired pods
 - kruise_cloneset_spec_strategy_rollingupdate_max_unavailable  限制下属最多不可用的 kruise_cloneset_specPod 数量
 - kruise_cloneset_spec_strategy_rollingupdate_max_surge  控制最多能扩出来超过 replicas 的 Pod 数量
 - kruise_cloneset_spec_metadata_generation
-- kruise_cloneset_labels  (缺少util里的 函数createLabelKeysValues())
-- 
 - kruise_cloneset_status_replicas_ready  ready Pod 数量
 - kruise_cloneset_status_replicas_updated_ready  最新版本的 ready Pod 数量
 - kruise_cloneset_status_replicas_unavailable  ready and unavailable Pod 数量
+- kruise_cloneset_status_condition
+- kruise_cloneset_labels  (缺少util里的 函数createLabelKeysValues())
 - kruise_cloneset_spec_strategy_partition  保留旧版本 Pod 的数量或百分比
-- kruise_cloneset_spec_strategy_type  升级策略类型
+- kruise_cloneset_strategy_type  升级策略类型
