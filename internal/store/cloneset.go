@@ -17,9 +17,9 @@ import (
 	"context"
 
 	"github.com/openkruise/kruise-api/apps/v1alpha1"
-	// clonesetcore "github.com/openkruise/kruise/pkg/controller/cloneset/core"
-	// clonesetutils "github.com/openkruise/kruise/pkg/controller/cloneset/utils"
-	// "github.com/openkruise/kruise/pkg/util/fieldindex"
+	clonesetcore "github.com/openkruise/kruise/pkg/controller/cloneset/core"
+	clonesetutils "github.com/openkruise/kruise/pkg/controller/cloneset/utils"
+	"github.com/openkruise/kruise/pkg/util/fieldindex"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
@@ -293,7 +293,8 @@ func cloneSetMetricFamilies(Client clientset.Interface, allowLabelsList []string
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
-							Value: float64(cs.Spec.UpdateStrategy.Partition),
+							LabelKeys:   []string{"partition"},
+							LabelValues: []string{cs.Spec.UpdateStrategy.Partition.String()},
 						},
 					},
 				}
@@ -308,7 +309,8 @@ func cloneSetMetricFamilies(Client clientset.Interface, allowLabelsList []string
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
-							Value: float64(cs.Spec.UpdateStrategy.Type),
+							LabelKeys:   []string{"strategy_type"},
+							LabelValues: []string{string(cs.Spec.UpdateStrategy.Type)},
 						},
 					},
 				}
