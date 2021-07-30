@@ -9,7 +9,6 @@
 - kruise_cloneset_spec_metadata_generation
 - kruise_cloneset_status_replicas_ready  ready Pod 数量
 - kruise_cloneset_status_replicas_updated_ready  最新版本的 ready Pod 数量
-- kruise_cloneset_status_replicas_unavailable  ready and unavailable Pod 数量
 - kruise_cloneset_status_condition
 - kruise_cloneset_labels  (缺少util里的 函数createLabelKeysValues())
 - kruise_cloneset_spec_strategy_partition  保留旧版本 Pod 的数量或百分比

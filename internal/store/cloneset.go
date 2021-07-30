@@ -17,14 +17,9 @@ import (
 	"context"
 
 	"github.com/openkruise/kruise-api/apps/v1alpha1"
-	clonesetcore "github.com/openkruise/kruise/pkg/controller/cloneset/core"
-	clonesetutils "github.com/openkruise/kruise/pkg/controller/cloneset/utils"
-	"github.com/openkruise/kruise/pkg/util/fieldindex"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/watch"
@@ -266,21 +261,6 @@ func cloneSetMetricFamilies(Client clientset.Interface, allowLabelsList []string
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_cloneset_status_replicasv_unavailable",
-			"The number of unavailable replicas per cloneset.",
-			metric.Gauge,
-			"",
-			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-				return &metric.Family{
-					Metrics: []*metric.Metric{
-						{
-							Value: float64(calculateUnavailableReplicas(cs, Client)),
-						},
-					},
-				}
-			}),
-		),
-		*generator.NewFamilyGenerator(
 			"kruise_cloneset_spec_strategy_partition",
 			"Number of desired pods for a cloneset.",
 			metric.Gauge,
@@ -343,27 +323,4 @@ func createCloneSetListWatch(kruiseClient kruiseclientset.Interface, ns string) 
 			return kruiseClient.AppsV1alpha1().CloneSets(ns).Watch(context.TODO(), opts)
 		},
 	}
-}
-
-func calculateUnavailableReplicas(cs *v1alpha1.CloneSet, Client clientset.Interface) int {
-	UnavailableReplicas := 0
-
-	opts := &client.ListOptions{
-		Namespace:     cs.Namespace,
-		FieldSelector: fields.SelectorFromSet(fields.Set{fieldindex.IndexNameForOwnerRefUID: string(cs.UID)}),
-	}
-	pods, err := clonesetutils.GetActivePods(Client, opts)
-	if err != nil {
-		return UnavailableReplicas
-	}
-	coreControl := clonesetcore.New(cs)
-	for _, pod := range pods {
-		if coreControl.IsPodUpdateReady(pod, 0) {
-			if !coreControl.IsPodUpdateReady(pod, cs.Spec.MinReadySeconds) {
-				UnavailableReplicas++
-			}
-		}
-
-	}
-	return UnavailableReplicas
 }
