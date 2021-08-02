@@ -18,7 +18,7 @@ manager: fmt vet
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet
-	go run main.go
+	go run main.go --kubeconfig ~/.kube/config
 
 # Run go fmt against code
 fmt:

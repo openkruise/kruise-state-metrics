@@ -23,7 +23,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/watch"
-	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 
 	"k8s.io/kube-state-metrics/v2/pkg/metric"
@@ -36,7 +35,7 @@ var (
 	descCloneSetLabelsDefaultLabels = []string{"namespace", "cloneset"}
 )
 
-func cloneSetMetricFamilies(Client clientset.Interface, allowLabelsList []string) []generator.FamilyGenerator {
+func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_cloneset_created",

@@ -171,7 +171,7 @@ func main() {
 	m := metricshandler.New(
 		opts,
 		kubeClient,
-		nil, //storeBuilder, fix it when https://github.com/kubernetes/kube-state-metrics/pull/1537 merged in upstream
+		storeBuilder,
 		opts.EnableGZIPEncoding,
 	)
 	// Run MetricsHandler
