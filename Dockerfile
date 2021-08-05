@@ -1,11 +1,10 @@
 FROM golang:1.16 as builder
 WORKDIR /workspace
 
-COPY . .
 # Build
 ENV GOPROXY=https://goproxy.cn
 
-RUN GO111MODULE=on go build -a -o manager main.go
+RUN GO111MODULE=on go build -a -o kruise-state-metrics main.go
 
 # Use Ubuntu 20.04 LTS as base image to package the manager binary
 FROM ubuntu:focal

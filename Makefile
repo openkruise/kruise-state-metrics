@@ -10,11 +10,11 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
-all: manager
+all: build
 
-# Build manager binary
-manager: fmt vet
-	go build -o bin/manager main.go
+# Build kruise-state-metrics binary
+build: fmt vet
+	go build -o bin/kruise-state-metrics main.go
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet
