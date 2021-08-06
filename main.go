@@ -141,6 +141,8 @@ func main() {
 
 	storeBuilder.WithGenerateStoresFunc(storeBuilder.DefaultGenerateStoresFunc())
 
+	storeBuilder.WithKruiseStoresFunc(storeBuilder.DefaultKruiseStoresFunc())
+
 	proc.StartReaper()
 
 	cfg, err := clientcmd.BuildConfigFromFlags(opts.Apiserver, opts.Kubeconfig)
