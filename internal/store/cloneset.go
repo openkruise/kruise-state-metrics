@@ -230,7 +230,7 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_cloneset_status_replicasv_ready",
+			"kruise_cloneset_status_replicas_ready",
 			"The number of ready replicas per cloneset.",
 			metric.Gauge,
 			"",
@@ -245,7 +245,7 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_cloneset_status_replicasv_updated_ready",
+			"kruise_cloneset_status_replicas_updated_ready",
 			"The number of update and ready replicas per cloneset.",
 			metric.Gauge,
 			"",
@@ -261,7 +261,7 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_cloneset_spec_strategy_partition",
-			"Number of desired pods for a cloneset.",
+			"Desired number or percent of Pods in old revisions.",
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
@@ -281,7 +281,7 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_cloneset_spec_strategy_type",
-			"Number of desired pods for a cloneset.",
+			"The type of updateStrategy.",
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {

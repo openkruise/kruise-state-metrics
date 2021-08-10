@@ -29,7 +29,7 @@ vet:
 	go vet ./...
 
 # Build the docker image
-docker-build: test
+docker-build:
 	docker build --pull --no-cache . -t ${IMG}
 
 # Push the docker image
