@@ -198,6 +198,16 @@ func availableResources() []string {
 	return c
 }
 
+// WithKruiseStoresFunc configures a custom Kruise store function
+func (b *Builder) WithKruiseStoresFunc(f BuildKruiseStoresFunc) {
+	b.buildKruiseStoresFunc = f
+}
+
+// DefaultKruiseStoresFunc returns default buildStores function
+func (b *Builder) DefaultKruiseStoresFunc() BuildKruiseStoresFunc {
+	return b.buildKruiseStores
+}
+
 func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
 	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch)
 }
