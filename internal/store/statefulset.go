@@ -15,8 +15,6 @@ package store
 
 import (
 	"context"
-	// 因为v1beta1 版本开始才支持reserveordinals字段 因此使用v1beta1来代替v1alpha1
-	// "github.com/openkruise/kruise-api/apps/v1alpha1"
 
 	"github.com/openkruise/kruise-api/apps/v1beta1"
 
