@@ -185,6 +185,7 @@ func (b *Builder) Build() []metricsstore.MetricsWriter {
 var availableStores = map[string]func(f *Builder) []*metricsstore.MetricsStore{
 	"clonesets":    func(b *Builder) []*metricsstore.MetricsStore { return b.buildCloneSetStores() },
 	"statefulsets": func(b *Builder) []*metricsstore.MetricsStore { return b.buildStatefulSetStores() },
+	"sidecarsets":  func(b *Builder) []*metricsstore.MetricsStore { return b.buildSidecarSetStores() },
 }
 
 func resourceExists(name string) bool {
@@ -216,6 +217,10 @@ func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
 
 func (b *Builder) buildStatefulSetStores() []*metricsstore.MetricsStore {
 	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowLabelsList["statefulsets"]), &appsv1beta1.StatefulSet{}, createStatefulSetListWatch)
+}
+
+func (b *Builder) buildSidecarSetStores() []*metricsstore.MetricsStore {
+	return b.buildKruiseStoresFunc(sidecarSetMetricFamilies(b.allowLabelsList["sidecarsets"]), &appsv1alpha1.SidecarSet{}, createSidecarSetListWatch)
 }
 
 func (b *Builder) buildKruiseStores(
