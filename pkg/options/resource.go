@@ -19,5 +19,6 @@ var (
 	// DefaultResources represents the default set of resources in kube-state-metrics.
 	DefaultResources = options.ResourceSet{
 		"clonesets": struct{}{},
+		"statefulsets": struct{}{},
 	}
 )

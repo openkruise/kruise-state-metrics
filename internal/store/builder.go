@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	appsv1alpha1 "github.com/openkruise/kruise-api/apps/v1alpha1"
+	appsv1beta1 "github.com/openkruise/kruise-api/apps/v1beta1"
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
@@ -47,7 +48,7 @@ type BuildKruiseStoresFunc func(metricFamilies []generator.FamilyGenerator,
 // New Builder methods should be added to the public BuilderInterface.
 var _ ksmtypes.BuilderInterface = &Builder{}
 
-// Builder helps to build store. It follows the builder pattern
+//  Builder helps to build store. It follows the builder pattern
 // (https://en.wikipedia.org/wiki/Builder_pattern).
 type Builder struct {
 	kubeClient            clientset.Interface
@@ -214,7 +215,7 @@ func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
 }
 
 func (b *Builder) buildStatefulSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowLabelsList["statefulsets"]), &appsv1alpha1.StatefulSet{}, createStatefulSetListWatch)
+	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowLabelsList["statefulsets"]), &appsv1beta1.StatefulSet{}, createStatefulSetListWatch)
 }
 
 func (b *Builder) buildKruiseStores(

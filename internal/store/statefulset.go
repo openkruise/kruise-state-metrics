@@ -344,10 +344,10 @@ func wrapStatefulSetFunc(f func(*v1beta1.StatefulSet) *metric.Family) func(inter
 func createStatefulSetListWatch(kruiseClient kruiseclientset.Interface, ns string) cache.ListerWatcher {
 	return &cache.ListWatch{
 		ListFunc: func(opts metav1.ListOptions) (runtime.Object, error) {
-			return kruiseClient.AppsV1alpha1().StatefulSets(ns).List(context.TODO(), opts)
+			return kruiseClient.AppsV1beta1().StatefulSets(ns).List(context.TODO(), opts)
 		},
 		WatchFunc: func(opts metav1.ListOptions) (watch.Interface, error) {
-			return kruiseClient.AppsV1alpha1().StatefulSets(ns).Watch(context.TODO(), opts)
+			return kruiseClient.AppsV1beta1().StatefulSets(ns).Watch(context.TODO(), opts)
 		},
 	}
 }
