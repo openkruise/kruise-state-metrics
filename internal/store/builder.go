@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	appsv1alpha1 "github.com/openkruise/kruise-api/apps/v1alpha1"
+	appsv1beta1 "github.com/openkruise/kruise-api/apps/v1beta1"
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
@@ -47,7 +48,7 @@ type BuildKruiseStoresFunc func(metricFamilies []generator.FamilyGenerator,
 // New Builder methods should be added to the public BuilderInterface.
 var _ ksmtypes.BuilderInterface = &Builder{}
 
-// Builder helps to build store. It follows the builder pattern
+//  Builder helps to build store. It follows the builder pattern
 // (https://en.wikipedia.org/wiki/Builder_pattern).
 type Builder struct {
 	kubeClient            clientset.Interface
@@ -182,7 +183,9 @@ func (b *Builder) Build() []metricsstore.MetricsWriter {
 }
 
 var availableStores = map[string]func(f *Builder) []*metricsstore.MetricsStore{
-	"clonesets": func(b *Builder) []*metricsstore.MetricsStore { return b.buildCloneSetStores() },
+	"clonesets":    func(b *Builder) []*metricsstore.MetricsStore { return b.buildCloneSetStores() },
+	"statefulsets": func(b *Builder) []*metricsstore.MetricsStore { return b.buildStatefulSetStores() },
+	"sidecarsets":  func(b *Builder) []*metricsstore.MetricsStore { return b.buildSidecarSetStores() },
 }
 
 func resourceExists(name string) bool {
@@ -210,6 +213,14 @@ func (b *Builder) DefaultKruiseStoresFunc() BuildKruiseStoresFunc {
 
 func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
 	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch)
+}
+
+func (b *Builder) buildStatefulSetStores() []*metricsstore.MetricsStore {
+	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowLabelsList["statefulsets"]), &appsv1beta1.StatefulSet{}, createStatefulSetListWatch)
+}
+
+func (b *Builder) buildSidecarSetStores() []*metricsstore.MetricsStore {
+	return b.buildKruiseStoresFunc(sidecarSetMetricFamilies(b.allowLabelsList["sidecarsets"]), &appsv1alpha1.SidecarSet{}, createSidecarSetListWatch)
 }
 
 func (b *Builder) buildKruiseStores(

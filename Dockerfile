@@ -1,5 +1,14 @@
 FROM golang:1.16 as builder
+
 WORKDIR /workspace
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+# Copy the go source
+COPY main.go main.go
+COPY internal/ internal/ 
+COPY pkg/ pkg/
 
 # Build
 ENV GOPROXY=https://goproxy.cn
