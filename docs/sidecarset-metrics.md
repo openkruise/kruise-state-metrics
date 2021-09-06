@@ -15,7 +15,7 @@
 | kruise_sidecarset_spec_strategy_type | The type of updateStrategy | STABLE |
 | kruise_sidecarset_spec_metadata_generation | Sequence number representing a specific generation of the desired state | STABLE |
 | kruise_sidecarset_labels | Kruise labels converted to Prometheus labels | STABLE |
-| kruise_sidecarset_spec_containers_injectpolicy |  | STABLE |
-| kruise_sidecarset_spec_containers_strategy_type |  | STABLE |
-| kruise_sidecarset_spec_containers_strategy_hotupgradeemptyimage |  | STABLE |
-| kruise_sidecarset_spec_containers_volumepolicy |  | STABLE |
+| kruise_sidecarset_spec_containers_injectpolicy | The rules that injected SidecarContainer into Pod.spec.containers | STABLE |
+| kruise_sidecarset_spec_containers_strategy_type | The type of containers' upgradeStrategy | STABLE |
+| kruise_sidecarset_spec_containers_strategy_hotupgradeemptyimage | The consistent of sidecar container | STABLE |
+| kruise_sidecarset_spec_containers_volumepolicy | The other container's VolumeMounts shared | STABLE |
