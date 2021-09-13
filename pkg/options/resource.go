@@ -22,5 +22,6 @@ var (
 		"statefulsets":    struct{}{},
 		"sidecarsets":     struct{}{},
 		"workloadspreads": struct{}{},
+		"daemonsets":      struct{}{},
 	}
 )

@@ -187,6 +187,7 @@ var availableStores = map[string]func(f *Builder) []*metricsstore.MetricsStore{
 	"statefulsets":    func(b *Builder) []*metricsstore.MetricsStore { return b.buildStatefulSetStores() },
 	"sidecarsets":     func(b *Builder) []*metricsstore.MetricsStore { return b.buildSidecarSetStores() },
 	"workloadspreads": func(b *Builder) []*metricsstore.MetricsStore { return b.buildWorkloadSpreadStores() },
+	"daemonsets":      func(b *Builder) []*metricsstore.MetricsStore { return b.buildDaemonSetStores() },
 }
 
 func resourceExists(name string) bool {
@@ -226,6 +227,10 @@ func (b *Builder) buildSidecarSetStores() []*metricsstore.MetricsStore {
 
 func (b *Builder) buildWorkloadSpreadStores() []*metricsstore.MetricsStore {
 	return b.buildKruiseStoresFunc(workloadSpreadMetricFamilies(b.allowLabelsList["workloadspreads"]), &appsv1alpha1.WorkloadSpread{}, createWorkloadSpreadListWatch)
+}
+
+func (b *Builder) buildDaemonSetStores() []*metricsstore.MetricsStore {
+	return b.buildKruiseStoresFunc(daemonSetMetricFamilies(b.allowLabelsList["daemonsets"]), &appsv1alpha1.DaemonSet{}, createDaemonSetListWatch)
 }
 
 func (b *Builder) buildKruiseStores(

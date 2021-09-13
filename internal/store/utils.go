@@ -20,11 +20,9 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/util/validation"
 
 	"k8s.io/kube-state-metrics/v2/pkg/metric"
 	"k8s.io/kube-state-metrics/v2/pkg/options"
@@ -35,20 +33,6 @@ var (
 	matchAllCap        = regexp.MustCompile("([a-z0-9])([A-Z])")
 	conditionStatuses  = []v1.ConditionStatus{v1.ConditionTrue, v1.ConditionFalse, v1.ConditionUnknown}
 )
-
-func resourceVersionMetric(rv string) []*metric.Metric {
-	v, err := strconv.ParseFloat(rv, 64)
-	if err != nil {
-		return []*metric.Metric{}
-	}
-
-	return []*metric.Metric{
-		{
-			Value: v,
-		},
-	}
-
-}
 
 func boolFloat64(b bool) float64 {
 	if b {
@@ -141,35 +125,6 @@ func toSnakeCase(s string) string {
 
 func labelConflictSuffix(label string, count int) string {
 	return fmt.Sprintf("%s_conflict%d", label, count)
-}
-
-func isHugePageResourceName(name v1.ResourceName) bool {
-	return strings.HasPrefix(string(name), v1.ResourceHugePagesPrefix)
-}
-
-func isAttachableVolumeResourceName(name v1.ResourceName) bool {
-	return strings.HasPrefix(string(name), v1.ResourceAttachableVolumesPrefix)
-}
-
-func isExtendedResourceName(name v1.ResourceName) bool {
-	if isNativeResource(name) || strings.HasPrefix(string(name), v1.DefaultResourceRequestsPrefix) {
-		return false
-	}
-	// Ensure it satisfies the rules in IsQualifiedName() after converted into quota resource name
-	nameForQuota := fmt.Sprintf("%s%s", v1.DefaultResourceRequestsPrefix, string(name))
-	if errs := validation.IsQualifiedName(nameForQuota); len(errs) != 0 {
-		return false
-	}
-	return true
-}
-
-func isNativeResource(name v1.ResourceName) bool {
-	return !strings.Contains(string(name), "/") ||
-		isPrefixedNativeResource(name)
-}
-
-func isPrefixedNativeResource(name v1.ResourceName) bool {
-	return strings.Contains(string(name), v1.ResourceDefaultNamespacePrefix)
 }
 
 // createLabelKeysValues takes in passed kubernetes labels and allowed list in kubernetes label format
