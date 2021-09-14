@@ -58,7 +58,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_status_replicas",
-			"The number of replicas per statefulset",
+			"The number of replicas per statefulset.",
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(s *v1beta1.StatefulSet) *metric.Family {
@@ -73,7 +73,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_status_replicas_available",
-			"The number of available replicas per statefulset",
+			"The number of available replicas per statefulset.",
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(s *v1beta1.StatefulSet) *metric.Family {
@@ -88,7 +88,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_status_replicas_current",
-			"The number of current replicas per statefulset",
+			"The number of current replicas per statefulset.",
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(s *v1beta1.StatefulSet) *metric.Family {
@@ -103,7 +103,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_status_replicas_ready",
-			"The number of ready replicas per statefulset",
+			"The number of ready replicas per statefulset.",
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(s *v1beta1.StatefulSet) *metric.Family {
@@ -118,7 +118,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_status_replicas_updated",
-			"The number of updated replicas per statefulset",
+			"The number of updated replicas per statefulset.",
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(s *v1beta1.StatefulSet) *metric.Family {
@@ -326,6 +326,7 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 		),
 	}
 }
+
 func wrapStatefulSetFunc(f func(*v1beta1.StatefulSet) *metric.Family) func(interface{}) *metric.Family {
 	return func(obj interface{}) *metric.Family {
 		statefulset := obj.(*v1beta1.StatefulSet)

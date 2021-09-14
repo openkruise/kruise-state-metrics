@@ -238,7 +238,7 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_sidecarset_spec_containers_injectpolicy",
-			"",
+			"The rules that injected SidecarContainer into Pod.spec.containers.",
 			metric.Gauge,
 			"",
 			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {
@@ -256,7 +256,7 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_sidecarset_spec_containers_strategy_type",
-			"",
+			"The type of containers' upgradeStrategy.",
 			metric.Gauge,
 			"",
 			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {
@@ -274,7 +274,7 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 		),
 		*generator.NewFamilyGenerator(
 			"kruise_sidecarset_spec_containers_strategy_hotupgradeemptyimage",
-			"",
+			"The consistent of sidecar container.",
 			metric.Gauge,
 			"",
 			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {
@@ -291,8 +291,8 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_sidecarset_containers_volumepolicy",
-			"",
+			"kruise_sidecarset_spec_containers_volumepolicy",
+			"The other container's VolumeMounts shared.",
 			metric.Gauge,
 			"",
 			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {

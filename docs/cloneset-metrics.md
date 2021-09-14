@@ -15,4 +15,5 @@
 | kruise_cloneset_spec_strategy_rollingupdate_max_unavailable | Maximum number of unavailable replicas during a rolling update of a cloneset | STABLE |
 | kruise_cloneset_spec_strategy_rollingupdate_max_surge | Maximum number of replicas that can be scheduled above the desired number of replicas during a rolling update of a cloneset | STABLE |
 | kruise_cloneset_spec_strategy_partition | Desired number or percent of Pods in old revisions | STABLE |
-| kruise_cloneset_spec_strategy_type | The type of updateStrategy | STABLE || kruise_cloneset_labels | Kruise labels converted to Prometheus labels | STABLE |
+| kruise_cloneset_spec_strategy_type | The type of updateStrategy | STABLE |
+| kruise_cloneset_labels | Kruise labels converted to Prometheus labels | STABLE |

@@ -18,3 +18,6 @@
 .idea/
 main
 config
+
+internal/store/cloneset_test.go
+internal/store/testutils.go
