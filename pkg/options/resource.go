@@ -23,5 +23,6 @@ var (
 		"sidecarsets":     struct{}{},
 		"workloadspreads": struct{}{},
 		"daemonsets":      struct{}{},
+		"broadcastjobs":   struct{}{},
 	}
 )
