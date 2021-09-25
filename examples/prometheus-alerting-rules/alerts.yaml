@@ -1,0 +1,48 @@
+groups:
+- name: kruise-state-metrics
+  rules:
+  - alert: KruiseStateMetricsListErrors
+    annotations:
+      description: kruise-state-metrics is experiencing errors at an elevated rate in list operations. This is likely causing it to not be able to expose metrics about Kruise objects correctly or at all.
+      summary: kruise-state-metrics is experiencing errors in list operations.
+    expr: |
+      (sum(rate(kruise_state_metrics_list_total{job="kruise-state-metrics",result="error"}[5m]))
+        /
+      sum(rate(kruise_state_metrics_list_total{job="kruise-state-metrics"}[5m])))
+      > 0.01
+    for: 15m
+    labels:
+      severity: critical
+  - alert: KruiseStateMetricsWatchErrors
+    annotations:
+      description: kruise-state-metrics is experiencing errors at an elevated rate in watch operations. This is likely causing it to not be able to expose metrics about Kruise objects correctly or at all.
+      summary: kruise-state-metrics is experiencing errors in watch operations.
+    expr: |
+      (sum(rate(kruise_state_metrics_watch_total{job="kruise-state-metrics",result="error"}[5m]))
+        /
+      sum(rate(kruise_state_metrics_watch_total{job="kruise-state-metrics"}[5m])))
+      > 0.01
+    for: 15m
+    labels:
+      severity: critical
+  - alert: KruiseStateMetricsShardingMismatch
+    annotations:
+      description: kruise-state-metrics pods are running with different --total-shards configuration, some Kruise objects may be exposed multiple times or not exposed at all.
+      summary: kruise-state-metrics sharding is misconfigured.
+    expr: |
+      stdvar (kruise_state_metrics_total_shards{job="kruise-state-metrics"}) != 0
+    for: 15m
+    labels:
+      severity: critical
+  - alert: KruiseStateMetricsShardsMissing
+    annotations:
+      description: kruise-state-metrics shards are missing, some Kruise objects are not being exposed.
+      summary: kruise-state-metrics shards are missing.
+    expr: |
+      2^max(kruise_state_metrics_total_shards{job="kruise-state-metrics"}) - 1
+        -
+      sum( 2 ^ max by (shard_ordinal) (kruise_state_metrics_shard_ordinal{job="kruise-state-metrics"}) )
+      != 0
+    for: 15m
+    labels:
+      severity: critical
