@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,12 +32,14 @@ import (
 )
 
 var (
+	descWorkloadSpreadAnnotationsName     = "kruise_workloadspread_annotations"
+	descWorkloadSpreadAnnotationsHelp     = "Kruise annotations converted to Prometheus labels."
 	descWorkloadSpreadLabelsName          = "kruise_workloadspread_labels"
 	descWorkloadSpreadLabelsHelp          = "Kruise labels converted to Prometheus labels."
 	descWorkloadSpreadLabelsDefaultLabels = []string{"namespace", "workloadspread"}
 )
 
-func workloadSpreadMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
+func workloadSpreadMetricFamilies(allowAnnotationsList, allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_workloadspread_created",
@@ -125,12 +130,30 @@ func workloadSpreadMetricFamilies(allowLabelsList []string) []generator.FamilyGe
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			descWorkloadSpreadAnnotationsName,
+			descWorkloadSpreadAnnotationsHelp,
+			metric.Gauge,
+			"",
+			wrapWorkloadSpreadFunc(func(ws *v1alpha1.WorkloadSpread) *metric.Family {
+				annotationKeys, annotationValues := createPrometheusLabelKeysValues("annotation", ws.Annotations, allowAnnotationsList)
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							LabelKeys:   annotationKeys,
+							LabelValues: annotationValues,
+							Value:       1,
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			descWorkloadSpreadLabelsName,
 			descWorkloadSpreadLabelsHelp,
 			metric.Gauge,
 			"",
 			wrapWorkloadSpreadFunc(func(ws *v1alpha1.WorkloadSpread) *metric.Family {
-				labelKeys, labelValues := createLabelKeysValues(ws.Labels, allowLabelsList)
+				labelKeys, labelValues := createPrometheusLabelKeysValues("label", ws.Labels, allowLabelsList)
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{

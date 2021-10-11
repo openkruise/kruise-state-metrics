@@ -1,0 +1,100 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: kruise-state-metrics-role
+rules:
+- apiGroups:
+  - apps.kruise.io
+  resources:
+  - '*'
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kruise-state-metrics-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kruise-state-metrics-role
+subjects:
+  - kind: ServiceAccount
+    name: kruise-state-metrics
+    namespace: kruise-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kruise-state-metrics
+  namespace: kruise-system
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kruise-state-metrics
+  namespace: kruise-system
+  labels:
+    control-plane: kruise-state-metrics
+spec:
+  selector:
+    matchLabels:
+      control-plane: kruise-state-metrics
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        control-plane: kruise-state-metrics
+    spec:
+      containers:
+      - command:
+        - /kruise-state-metrics
+        args:
+        - --logtostderr=true
+        - --v=5
+        image: kruise-state-metrics:latest
+        imagePullPolicy: Always
+        name: kruise-state-metrics
+        ports:
+        - name: http-metrics
+          containerPort: 8080
+        - name: telemetry
+          containerPort: 8081
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8081
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: kruise-state-metrics
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kruise-state-metrics
+  namespace: kruise-system
+spec:
+  ports:
+  - name: http-metrics
+    port: 8080
+    targetPort: http-metrics
+  - name: telemetry
+    port: 8081
+    targetPort: telemetry
+  selector:
+    control-plane: kruise-state-metrics

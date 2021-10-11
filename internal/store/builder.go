@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,13 +45,14 @@ import (
 type BuildKruiseStoresFunc func(metricFamilies []generator.FamilyGenerator,
 	expectedType interface{},
 	listWatchFunc func(kruiseClient kruiseclientset.Interface, ns string) cache.ListerWatcher,
+	useAPIServerCache bool,
 ) []*metricsstore.MetricsStore
 
 // Make sure the internal Builder implements the public BuilderInterface.
 // New Builder methods should be added to the public BuilderInterface.
 var _ ksmtypes.BuilderInterface = &Builder{}
 
-//  Builder helps to build store. It follows the builder pattern
+// Builder helps to build store. It follows the builder pattern
 // (https://en.wikipedia.org/wiki/Builder_pattern).
 type Builder struct {
 	kubeClient            clientset.Interface
@@ -63,7 +67,9 @@ type Builder struct {
 	totalShards           int
 	buildStoresFunc       ksmtypes.BuildStoresFunc
 	buildKruiseStoresFunc BuildKruiseStoresFunc
+	allowAnnotationsList  map[string][]string
 	allowLabelsList       map[string][]string
+	useAPIServerCache     bool
 }
 
 // NewBuilder returns a new builder.
@@ -137,13 +143,21 @@ func (b *Builder) WithAllowDenyList(l ksmtypes.AllowDenyLister) {
 }
 
 // WithGenerateStoresFunc configures a custom generate store function
-func (b *Builder) WithGenerateStoresFunc(f ksmtypes.BuildStoresFunc) {
+func (b *Builder) WithGenerateStoresFunc(f ksmtypes.BuildStoresFunc, u bool) {
 	b.buildStoresFunc = f
+	b.useAPIServerCache = u
 }
 
 // DefaultGenerateStoresFunc returns default buildStores function
 func (b *Builder) DefaultGenerateStoresFunc() ksmtypes.BuildStoresFunc {
 	return b.buildStores
+}
+
+// WithAllowAnnotations configures which annotations can be returned for metrics
+func (b *Builder) WithAllowAnnotations(annotations map[string][]string) {
+	if len(annotations) > 0 {
+		b.allowAnnotationsList = annotations
+	}
 }
 
 // WithAllowLabels configures which labels can be returned for metrics
@@ -205,8 +219,9 @@ func availableResources() []string {
 }
 
 // WithKruiseStoresFunc configures a custom Kruise store function
-func (b *Builder) WithKruiseStoresFunc(f BuildKruiseStoresFunc) {
+func (b *Builder) WithKruiseStoresFunc(f BuildKruiseStoresFunc, u bool) {
 	b.buildKruiseStoresFunc = f
+	b.useAPIServerCache = u
 }
 
 // DefaultKruiseStoresFunc returns default buildStores function
@@ -215,33 +230,34 @@ func (b *Builder) DefaultKruiseStoresFunc() BuildKruiseStoresFunc {
 }
 
 func (b *Builder) buildCloneSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch)
+	return b.buildKruiseStoresFunc(cloneSetMetricFamilies(b.allowAnnotationsList["clonesets"], b.allowLabelsList["clonesets"]), &appsv1alpha1.CloneSet{}, createCloneSetListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildStatefulSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowLabelsList["statefulsets"]), &appsv1beta1.StatefulSet{}, createStatefulSetListWatch)
+	return b.buildKruiseStoresFunc(statefulSetMetricFamilies(b.allowAnnotationsList["statefulsets"], b.allowLabelsList["statefulsets"]), &appsv1beta1.StatefulSet{}, createStatefulSetListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildSidecarSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(sidecarSetMetricFamilies(b.allowLabelsList["sidecarsets"]), &appsv1alpha1.SidecarSet{}, createSidecarSetListWatch)
+	return b.buildKruiseStoresFunc(sidecarSetMetricFamilies(b.allowAnnotationsList["sidecarsets"], b.allowLabelsList["sidecarsets"]), &appsv1alpha1.SidecarSet{}, createSidecarSetListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildWorkloadSpreadStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(workloadSpreadMetricFamilies(b.allowLabelsList["workloadspreads"]), &appsv1alpha1.WorkloadSpread{}, createWorkloadSpreadListWatch)
+	return b.buildKruiseStoresFunc(workloadSpreadMetricFamilies(b.allowAnnotationsList["workloadspreads"], b.allowLabelsList["workloadspreads"]), &appsv1alpha1.WorkloadSpread{}, createWorkloadSpreadListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildDaemonSetStores() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(daemonSetMetricFamilies(b.allowLabelsList["daemonsets"]), &appsv1alpha1.DaemonSet{}, createDaemonSetListWatch)
+	return b.buildKruiseStoresFunc(daemonSetMetricFamilies(b.allowAnnotationsList["daemonsets"], b.allowLabelsList["daemonsets"]), &appsv1alpha1.DaemonSet{}, createDaemonSetListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildBroadcastJob() []*metricsstore.MetricsStore {
-	return b.buildKruiseStoresFunc(broadcastJobMetricFamilies(b.allowLabelsList["broadcastjobs"]), &appsv1alpha1.BroadcastJob{}, createBroadcastJobListWatch)
+	return b.buildKruiseStoresFunc(broadcastJobMetricFamilies(b.allowAnnotationsList["broadcastjobs"], b.allowLabelsList["broadcastjobs"]), &appsv1alpha1.BroadcastJob{}, createBroadcastJobListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildKruiseStores(
 	metricFamilies []generator.FamilyGenerator,
 	expectedType interface{},
 	listWatchFunc func(kruiseClient kruiseclientset.Interface, ns string) cache.ListerWatcher,
+	useAPIServerCache bool,
 ) []*metricsstore.MetricsStore {
 	metricFamilies = generator.FilterMetricFamilies(b.allowDenyList, metricFamilies)
 	composedMetricGenFuncs := generator.ComposeMetricGenFuncs(metricFamilies)
@@ -253,7 +269,7 @@ func (b *Builder) buildKruiseStores(
 			composedMetricGenFuncs,
 		)
 		listWatcher := listWatchFunc(b.kruiseClient, v1.NamespaceAll)
-		b.startReflector(expectedType, store, listWatcher)
+		b.startReflector(expectedType, store, listWatcher, useAPIServerCache)
 		return []*metricsstore.MetricsStore{store}
 	}
 
@@ -264,7 +280,7 @@ func (b *Builder) buildKruiseStores(
 			composedMetricGenFuncs,
 		)
 		listWatcher := listWatchFunc(b.kruiseClient, ns)
-		b.startReflector(expectedType, store, listWatcher)
+		b.startReflector(expectedType, store, listWatcher, useAPIServerCache)
 		stores = append(stores, store)
 	}
 
@@ -275,6 +291,7 @@ func (b *Builder) buildStores(
 	metricFamilies []generator.FamilyGenerator,
 	expectedType interface{},
 	listWatchFunc func(kubeClient clientset.Interface, ns string) cache.ListerWatcher,
+	useAPIServerCache bool,
 ) []*metricsstore.MetricsStore {
 	metricFamilies = generator.FilterMetricFamilies(b.allowDenyList, metricFamilies)
 	composedMetricGenFuncs := generator.ComposeMetricGenFuncs(metricFamilies)
@@ -286,7 +303,7 @@ func (b *Builder) buildStores(
 			composedMetricGenFuncs,
 		)
 		listWatcher := listWatchFunc(b.kubeClient, v1.NamespaceAll)
-		b.startReflector(expectedType, store, listWatcher)
+		b.startReflector(expectedType, store, listWatcher, useAPIServerCache)
 		return []*metricsstore.MetricsStore{store}
 	}
 
@@ -297,7 +314,7 @@ func (b *Builder) buildStores(
 			composedMetricGenFuncs,
 		)
 		listWatcher := listWatchFunc(b.kubeClient, ns)
-		b.startReflector(expectedType, store, listWatcher)
+		b.startReflector(expectedType, store, listWatcher, useAPIServerCache)
 		stores = append(stores, store)
 	}
 
@@ -310,8 +327,9 @@ func (b *Builder) startReflector(
 	expectedType interface{},
 	store cache.Store,
 	listWatcher cache.ListerWatcher,
+	useAPIServerCache bool,
 ) {
-	instrumentedListWatch := watch.NewInstrumentedListerWatcher(listWatcher, b.listWatchMetrics, reflect.TypeOf(expectedType).String())
+	instrumentedListWatch := watch.NewInstrumentedListerWatcher(listWatcher, b.listWatchMetrics, reflect.TypeOf(expectedType).String(), useAPIServerCache)
 	reflector := cache.NewReflector(sharding.NewShardedListWatch(b.shard, b.totalShards, instrumentedListWatch), expectedType, store, 0)
 	go reflector.Run(b.ctx.Done())
 }

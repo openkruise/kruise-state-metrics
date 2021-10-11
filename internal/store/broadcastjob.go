@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,12 +32,14 @@ import (
 )
 
 var (
+	descBroadcastJobAnnotationsName     = "kruise_broadcastjob_annotations"
+	descBroadcastJobAnnotationsHelp     = "Kruise annotations converted to Prometheus labels."
 	descBroadcastJobLabelsName          = "kruise_broadcastjob_labels"
 	descBroadcastJobLabelsHelp          = "Kruise labels converted to Prometheus labels."
 	descBroadcastJobLabelsDefaultLabels = []string{"namespace", "broadcastjob"}
 )
 
-func broadcastJobMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
+func broadcastJobMetricFamilies(allowAnnotationsList, allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_broadcastjob_created",
@@ -171,12 +176,30 @@ func broadcastJobMetricFamilies(allowLabelsList []string) []generator.FamilyGene
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			descBroadcastJobAnnotationsName,
+			descBroadcastJobAnnotationsHelp,
+			metric.Gauge,
+			"",
+			wrapBroadcastJobFunc(func(bj *v1alpha1.BroadcastJob) *metric.Family {
+				annotationKeys, annotationValues := createPrometheusLabelKeysValues("annotation", bj.Annotations, allowAnnotationsList)
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							LabelKeys:   annotationKeys,
+							LabelValues: annotationValues,
+							Value:       1,
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			descBroadcastJobLabelsName,
 			descBroadcastJobLabelsHelp,
 			metric.Gauge,
 			"",
 			wrapBroadcastJobFunc(func(bj *v1alpha1.BroadcastJob) *metric.Family {
-				labelKeys, labelValues := createLabelKeysValues(bj.Labels, allowLabelsList)
+				labelKeys, labelValues := createPrometheusLabelKeysValues("label", bj.Labels, allowLabelsList)
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{

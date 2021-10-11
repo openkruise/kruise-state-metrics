@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +33,14 @@ import (
 )
 
 var (
+	descStatefulSetAnnotationsName     = "kruise_statefulset_annotations"
+	descStatefulSetAnnotationsHelp     = "Kruise annotations converted to Prometheus labels."
 	descStatefulSetLabelsName          = "kruise_statefulset_labels"
 	descStatefulSetLabelsHelp          = "Kruise labels converted to Prometheus labels."
 	descStatefulSetLabelsDefaultLabels = []string{"namespace", "statefulset"}
 )
 
-func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
+func statefulSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_statefulset_created",
@@ -257,12 +262,30 @@ func statefulSetMetricFamilies(allowLabelsList []string) []generator.FamilyGener
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			descStatefulSetAnnotationsName,
+			descStatefulSetAnnotationsHelp,
+			metric.Gauge,
+			"",
+			wrapStatefulSetFunc(func(cs *v1beta1.StatefulSet) *metric.Family {
+				annotationKeys, annotationValues := createPrometheusLabelKeysValues("annotation", cs.Annotations, allowAnnotationsList)
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							LabelKeys:   annotationKeys,
+							LabelValues: annotationValues,
+							Value:       1,
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			descStatefulSetLabelsName,
 			descStatefulSetLabelsHelp,
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(cs *v1beta1.StatefulSet) *metric.Family {
-				labelKeys, labelValues := createLabelKeysValues(cs.Labels, allowLabelsList)
+				labelKeys, labelValues := createPrometheusLabelKeysValues("label", cs.Labels, allowLabelsList)
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{

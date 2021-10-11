@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +33,20 @@ import (
 )
 
 var (
+	descCloneSetAnnotationsName     = "kruise_cloneset_annotations"
+	descCloneSetAnnotationsHelp     = "Kruise annotations converted to Prometheus labels."
 	descCloneSetLabelsName          = "kruise_cloneset_labels"
 	descCloneSetLabelsHelp          = "Kruise labels converted to Prometheus labels."
 	descCloneSetLabelsDefaultLabels = []string{"namespace", "cloneset"}
+
+	cloneSetUpdateTypes = []v1alpha1.CloneSetUpdateStrategyType{
+		v1alpha1.RecreateCloneSetUpdateStrategyType,
+		v1alpha1.InPlaceIfPossibleCloneSetUpdateStrategyType,
+		v1alpha1.InPlaceOnlyCloneSetUpdateStrategyType,
+	}
 )
 
-func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
+func cloneSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_cloneset_created",
@@ -212,12 +223,30 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			descCloneSetAnnotationsName,
+			descCloneSetAnnotationsHelp,
+			metric.Gauge,
+			"",
+			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
+				annotationKeys, annotationValues := createPrometheusLabelKeysValues("annotation", cs.Annotations, allowAnnotationsList)
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							LabelKeys:   annotationKeys,
+							LabelValues: annotationValues,
+							Value:       1,
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			descCloneSetLabelsName,
 			descCloneSetLabelsHelp,
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-				labelKeys, labelValues := createLabelKeysValues(cs.Labels, allowLabelsList)
+				labelKeys, labelValues := createPrometheusLabelKeysValues("label", cs.Labels, allowLabelsList)
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
@@ -285,13 +314,18 @@ func cloneSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerato
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
+				ms := make([]*metric.Metric, len(cloneSetUpdateTypes))
+
+				for i, t := range cloneSetUpdateTypes {
+					ms[i] = &metric.Metric{
+						LabelKeys:   []string{"strategy_type"},
+						LabelValues: []string{string(t)},
+						Value:       boolFloat64(cs.Spec.UpdateStrategy.Type == t),
+					}
+				}
+
 				return &metric.Family{
-					Metrics: []*metric.Metric{
-						{
-							LabelKeys:   []string{"strategy_type"},
-							LabelValues: []string{string(cs.Spec.UpdateStrategy.Type)},
-						},
-					},
+					Metrics: ms,
 				}
 			}),
 		),

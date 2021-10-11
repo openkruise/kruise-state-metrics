@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,12 +33,14 @@ import (
 )
 
 var (
+	descSidecarSetAnnotationsName     = "kruise_sidecarset_annotations"
+	descSidecarSetAnnotationsHelp     = "Kruise annotations converted to Prometheus labels."
 	descSidecarSetLabelsName          = "kruise_sidecarset_labels"
 	descSidecarSetLabelsHelp          = "Kruise labels converted to Prometheus labels."
 	descSidecarSetLabelsDefaultLabels = []string{"namespace", "sidecarset"}
 )
 
-func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenerator {
+func sidecarSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []generator.FamilyGenerator {
 	return []generator.FamilyGenerator{
 		*generator.NewFamilyGenerator(
 			"kruise_sidecarset_created",
@@ -219,12 +224,30 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			descSidecarSetAnnotationsName,
+			descSidecarSetAnnotationsHelp,
+			metric.Gauge,
+			"",
+			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {
+				annotationKeys, annotationValues := createPrometheusLabelKeysValues("annotation", sc.Annotations, allowAnnotationsList)
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							LabelKeys:   annotationKeys,
+							LabelValues: annotationValues,
+							Value:       1,
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			descSidecarSetLabelsName,
 			descSidecarSetLabelsHelp,
 			metric.Gauge,
 			"",
 			wrapSidecarSetFunc(func(sc *v1alpha1.SidecarSet) *metric.Family {
-				labelKeys, labelValues := createLabelKeysValues(sc.Labels, allowLabelsList)
+				labelKeys, labelValues := createPrometheusLabelKeysValues("label", sc.Labels, allowLabelsList)
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
@@ -282,7 +305,7 @@ func sidecarSetMetricFamilies(allowLabelsList []string) []generator.FamilyGenera
 				for _, container := range sc.Spec.Containers {
 					ms = append(ms, &metric.Metric{
 						LabelKeys:   []string{"hotupgradeemptyimage"},
-						LabelValues: []string{string(container.UpgradeStrategy.HotUpgradeEmptyImage)},
+						LabelValues: []string{container.UpgradeStrategy.HotUpgradeEmptyImage},
 					})
 				}
 				return &metric.Family{

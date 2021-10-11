@@ -1,9 +1,12 @@
 /*
 Copyright 2021 The Kruise Authors.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -138,10 +141,8 @@ func main() {
 	klog.Infof("metric allow-denylisting: %v", allowDenyList.Status())
 
 	storeBuilder.WithAllowDenyList(allowDenyList)
-
-	storeBuilder.WithGenerateStoresFunc(storeBuilder.DefaultGenerateStoresFunc())
-
-	storeBuilder.WithKruiseStoresFunc(storeBuilder.DefaultKruiseStoresFunc())
+	storeBuilder.WithGenerateStoresFunc(storeBuilder.DefaultGenerateStoresFunc(), opts.UseAPIServerCache)
+	storeBuilder.WithKruiseStoresFunc(storeBuilder.DefaultKruiseStoresFunc(), opts.UseAPIServerCache)
 
 	proc.StartReaper()
 
@@ -161,6 +162,7 @@ func main() {
 	storeBuilder.WithKruiseClient(kruiseClient)
 	storeBuilder.WithVPAClient(vpaClient)
 	storeBuilder.WithSharding(opts.Shard, opts.TotalShards)
+	storeBuilder.WithAllowAnnotations(opts.AnnotationsAllowList)
 	storeBuilder.WithAllowLabels(opts.LabelsAllowList)
 
 	ksmMetricsRegistry.MustRegister(
