@@ -92,7 +92,7 @@ func sidecarSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_sidecarset_status_replicas_ready ",
+			"kruise_sidecarset_status_replicas_ready",
 			"The number of ready  replicas per sidecarset.",
 			metric.Gauge,
 			"",
