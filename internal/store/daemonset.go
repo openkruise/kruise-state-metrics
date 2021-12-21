@@ -93,7 +93,11 @@ func daemonSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []g
 			metric.Gauge,
 			"",
 			wrapDaemonSetFunc(func(ds *v1alpha1.DaemonSet) *metric.Family {
-				maxSurge, err := intstr.GetValueFromIntOrPercent(ds.Spec.UpdateStrategy.RollingUpdate.MaxSurge, int(ds.Status.DesiredNumberScheduled), true)
+				rollingUpdateMaxSurge := intstr.FromInt(0)
+				if ds.Spec.UpdateStrategy.RollingUpdate.MaxSurge != nil {
+					rollingUpdateMaxSurge = *ds.Spec.UpdateStrategy.RollingUpdate.MaxSurge
+				}
+				maxSurge, err := intstr.GetValueFromIntOrPercent(&rollingUpdateMaxSurge, int(ds.Status.DesiredNumberScheduled), true)
 				if err != nil {
 					panic(err)
 				}
