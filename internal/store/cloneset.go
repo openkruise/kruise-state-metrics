@@ -173,7 +173,11 @@ func cloneSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []ge
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-				maxUnavailable, err := intstr.GetValueFromIntOrPercent(cs.Spec.UpdateStrategy.MaxUnavailable, int(*cs.Spec.Replicas), false)
+				updateStrategyMaxUnavailable := intstr.FromInt(0)
+				if cs.Spec.UpdateStrategy.MaxUnavailable == nil {
+					updateStrategyMaxUnavailable = *cs.Spec.UpdateStrategy.MaxUnavailable
+				}
+				maxUnavailable, err := intstr.GetValueFromIntOrPercent(&updateStrategyMaxUnavailable, int(*cs.Spec.Replicas), false)
 				if err != nil {
 					panic(err)
 				}
@@ -193,7 +197,11 @@ func cloneSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []ge
 			metric.Gauge,
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
-				maxSurge, err := intstr.GetValueFromIntOrPercent(cs.Spec.UpdateStrategy.MaxSurge, int(*cs.Spec.Replicas), true)
+				updateStrategyMaxSurge := intstr.FromInt(0)
+				if cs.Spec.UpdateStrategy.MaxSurge != nil {
+					updateStrategyMaxSurge = *cs.Spec.UpdateStrategy.MaxSurge
+				}
+				maxSurge, err := intstr.GetValueFromIntOrPercent(&updateStrategyMaxSurge, int(*cs.Spec.Replicas), true)
 				if err != nil {
 					panic(err)
 				}
