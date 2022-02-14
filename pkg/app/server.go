@@ -26,8 +26,6 @@ import (
 
 	"github.com/oklog/run"
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
-	"github.com/openkruise/kruise-state-metrics/internal/store"
-	localoptions "github.com/openkruise/kruise-state-metrics/pkg/options"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
@@ -44,6 +42,9 @@ import (
 	"k8s.io/kube-state-metrics/v2/pkg/metricshandler"
 	"k8s.io/kube-state-metrics/v2/pkg/options"
 	"k8s.io/kube-state-metrics/v2/pkg/util/proc"
+
+	"github.com/openkruise/kruise-state-metrics/internal/store"
+	localoptions "github.com/openkruise/kruise-state-metrics/pkg/options"
 )
 
 const (

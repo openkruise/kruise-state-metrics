@@ -21,10 +21,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/openkruise/kruise-state-metrics/pkg/app"
 	"github.com/prometheus/common/version"
 	"k8s.io/klog/v2"
 	"k8s.io/kube-state-metrics/v2/pkg/options"
+
+	"github.com/openkruise/kruise-state-metrics/pkg/app"
 )
 
 func main() {
