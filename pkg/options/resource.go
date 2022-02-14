@@ -21,12 +21,12 @@ import "k8s.io/kube-state-metrics/v2/pkg/options"
 var (
 	// DefaultResources represents the default set of resources in kube-state-metrics.
 	DefaultResources = options.ResourceSet{
-		"clonesets":                struct{}{},
-		"statefulsets":             struct{}{},
-		"sidecarsets":              struct{}{},
-		"workloadspreads":          struct{}{},
-		"daemonsets":               struct{}{},
-		"broadcastjobs":            struct{}{},
-		"containerrecreaterequest": struct{}{},
+		"clonesets":                 struct{}{},
+		"statefulsets":              struct{}{},
+		"sidecarsets":               struct{}{},
+		"workloadspreads":           struct{}{},
+		"daemonsets":                struct{}{},
+		"broadcastjobs":             struct{}{},
+		"containerrecreaterequests": struct{}{},
 	}
 )
