@@ -26,9 +26,11 @@ import (
 	"k8s.io/kube-state-metrics/v2/pkg/options"
 
 	"github.com/openkruise/kruise-state-metrics/pkg/app"
+	localoptions "github.com/openkruise/kruise-state-metrics/pkg/options"
 )
 
 func main() {
+	options.DefaultResources = localoptions.DefaultResources
 	opts := options.NewOptions()
 	opts.AddFlags()
 
