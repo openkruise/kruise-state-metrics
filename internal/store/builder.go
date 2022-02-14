@@ -197,12 +197,13 @@ func (b *Builder) Build() []metricsstore.MetricsWriter {
 }
 
 var availableStores = map[string]func(f *Builder) []*metricsstore.MetricsStore{
-	"clonesets":       func(b *Builder) []*metricsstore.MetricsStore { return b.buildCloneSetStores() },
-	"statefulsets":    func(b *Builder) []*metricsstore.MetricsStore { return b.buildStatefulSetStores() },
-	"sidecarsets":     func(b *Builder) []*metricsstore.MetricsStore { return b.buildSidecarSetStores() },
-	"workloadspreads": func(b *Builder) []*metricsstore.MetricsStore { return b.buildWorkloadSpreadStores() },
-	"daemonsets":      func(b *Builder) []*metricsstore.MetricsStore { return b.buildDaemonSetStores() },
-	"broadcastjobs":   func(b *Builder) []*metricsstore.MetricsStore { return b.buildBroadcastJob() },
+	"clonesets":                 func(b *Builder) []*metricsstore.MetricsStore { return b.buildCloneSetStores() },
+	"statefulsets":              func(b *Builder) []*metricsstore.MetricsStore { return b.buildStatefulSetStores() },
+	"sidecarsets":               func(b *Builder) []*metricsstore.MetricsStore { return b.buildSidecarSetStores() },
+	"workloadspreads":           func(b *Builder) []*metricsstore.MetricsStore { return b.buildWorkloadSpreadStores() },
+	"daemonsets":                func(b *Builder) []*metricsstore.MetricsStore { return b.buildDaemonSetStores() },
+	"broadcastjobs":             func(b *Builder) []*metricsstore.MetricsStore { return b.buildBroadcastJob() },
+	"containerrecreaterequests": func(b *Builder) []*metricsstore.MetricsStore { return b.buildContainerRecreateRequest() },
 }
 
 func resourceExists(name string) bool {
@@ -251,6 +252,10 @@ func (b *Builder) buildDaemonSetStores() []*metricsstore.MetricsStore {
 
 func (b *Builder) buildBroadcastJob() []*metricsstore.MetricsStore {
 	return b.buildKruiseStoresFunc(broadcastJobMetricFamilies(b.allowAnnotationsList["broadcastjobs"], b.allowLabelsList["broadcastjobs"]), &appsv1alpha1.BroadcastJob{}, createBroadcastJobListWatch, b.useAPIServerCache)
+}
+
+func (b *Builder) buildContainerRecreateRequest() []*metricsstore.MetricsStore {
+	return b.buildKruiseStoresFunc(containerRecreateRequestMetricFamilies(b.allowAnnotationsList["containerrecreaterequests"], b.allowLabelsList["containerrecreaterequests"]), &appsv1alpha1.ContainerRecreateRequest{}, createContainerRecreateRequestListWatch, b.useAPIServerCache)
 }
 
 func (b *Builder) buildKruiseStores(

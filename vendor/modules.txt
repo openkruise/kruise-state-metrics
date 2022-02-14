@@ -55,7 +55,7 @@ github.com/mwitkow/go-conntrack
 # github.com/oklog/run v1.1.0
 ## explicit
 github.com/oklog/run
-# github.com/openkruise/kruise-api v0.10.0
+# github.com/openkruise/kruise-api v1.0.0
 ## explicit
 github.com/openkruise/kruise-api/apps/pub
 github.com/openkruise/kruise-api/apps/v1alpha1

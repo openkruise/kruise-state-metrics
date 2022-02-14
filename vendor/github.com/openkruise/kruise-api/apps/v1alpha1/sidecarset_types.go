@@ -40,6 +40,8 @@ type SidecarSetSpec struct {
 	Containers []SidecarContainer `json:"containers,omitempty"`
 
 	// List of volumes that can be mounted by sidecar containers
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Schemaless
 	Volumes []corev1.Volume `json:"volumes,omitempty"`
 
 	// The sidecarset updateStrategy to use to replace existing pods with new ones.
@@ -54,6 +56,8 @@ type SidecarSetSpec struct {
 
 // SidecarContainer defines the container of Sidecar
 type SidecarContainer struct {
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Schemaless
 	corev1.Container `json:",inline"`
 
 	// The rules that injected SidecarContainer into Pod.spec.containers,
@@ -95,7 +99,16 @@ const (
 
 type TransferEnvVar struct {
 	SourceContainerName string `json:"sourceContainerName,omitempty"`
-	EnvName             string `json:"envName,omitempty"`
+	// +optional
+	SourceContainerNameFrom *SourceContainerNameSource `json:"sourceContainerNameFrom,omitempty"`
+	EnvName                 string                     `json:"envName,omitempty"`
+	// +optional
+	EnvNames []string `json:"envNames,omitempty"`
+}
+
+type SourceContainerNameSource struct {
+	// Selects a field of the pod: supports metadata.name, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+	FieldRef *corev1.ObjectFieldSelector `json:"fieldRef,omitempty"`
 }
 
 type SidecarContainerUpgradeType string

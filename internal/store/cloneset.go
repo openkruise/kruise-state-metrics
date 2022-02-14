@@ -20,7 +20,6 @@ import (
 	"context"
 
 	"github.com/openkruise/kruise-api/apps/v1alpha1"
-
 	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -174,7 +173,7 @@ func cloneSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []ge
 			"",
 			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
 				updateStrategyMaxUnavailable := intstr.FromInt(0)
-				if cs.Spec.UpdateStrategy.MaxUnavailable == nil {
+				if cs.Spec.UpdateStrategy.MaxUnavailable != nil {
 					updateStrategyMaxUnavailable = *cs.Spec.UpdateStrategy.MaxUnavailable
 				}
 				maxUnavailable, err := intstr.GetValueFromIntOrPercent(&updateStrategyMaxUnavailable, int(*cs.Spec.Replicas), false)
