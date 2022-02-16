@@ -112,24 +112,6 @@ func workloadSpreadMetricFamilies(allowAnnotationsList, allowLabelsList []string
 			}),
 		),
 		*generator.NewFamilyGenerator(
-			"kruise_workloadspread_spec_subsets_max_replicas",
-			"The desired max replicas of this subset.",
-			metric.Gauge,
-			"",
-			wrapWorkloadSpreadFunc(func(ws *v1alpha1.WorkloadSpread) *metric.Family {
-				ms := []*metric.Metric{}
-				for _, subset := range ws.Spec.Subsets {
-					ms = append(ms, &metric.Metric{
-						LabelKeys:   []string{"maxreplicas"},
-						LabelValues: []string{subset.MaxReplicas.StrVal},
-					})
-				}
-				return &metric.Family{
-					Metrics: ms,
-				}
-			}),
-		),
-		*generator.NewFamilyGenerator(
 			descWorkloadSpreadAnnotationsName,
 			descWorkloadSpreadAnnotationsHelp,
 			metric.Gauge,
