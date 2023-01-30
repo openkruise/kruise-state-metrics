@@ -97,6 +97,21 @@ func cloneSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) []ge
 			}),
 		),
 		*generator.NewFamilyGenerator(
+			"kruise_cloneset_status_replicas_unavailable",
+			"The number of unavailable replicas per cloneset.",
+			metric.Gauge,
+			"",
+			wrapCloneSetFunc(func(cs *v1alpha1.CloneSet) *metric.Family {
+				return &metric.Family{
+					Metrics: []*metric.Metric{
+						{
+							Value: float64(*cs.Spec.Replicas - cs.Status.AvailableReplicas),
+						},
+					},
+				}
+			}),
+		),
+		*generator.NewFamilyGenerator(
 			"kruise_cloneset_status_replicas_updated",
 			"The number of updated replicas per cloneset.",
 			metric.Gauge,

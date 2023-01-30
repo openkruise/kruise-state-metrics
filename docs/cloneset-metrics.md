@@ -6,6 +6,7 @@
 | kruise_cloneset_metadata_generation | Sequence number representing a specific generation of the desired state | STABLE |
 | kruise_cloneset_status_replicas | The number of replicas per cloneset | STABLE |
 | kruise_cloneset_status_replicas_available | The number of available replicas per cloneset | STABLE |
+| kruise_cloneset_status_replicas_unavailable | The number of unavailable replicas per cloneset | STABLE |
 | kruise_cloneset_status_replicas_updated | The number of updated replicas per cloneset | STABLE |
 | kruise_cloneset_status_observed_generation | The generation observed by the cloneset controller | STABLE |
 | kruise_cloneset_status_condition | The current status conditions of a cloneset | STABLE |

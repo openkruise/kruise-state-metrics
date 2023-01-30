@@ -22,7 +22,7 @@ import (
 	"os"
 
 	"github.com/prometheus/common/version"
-	"k8s.io/klog/v2"
+	klog "k8s.io/klog/v2"
 	"k8s.io/kube-state-metrics/v2/pkg/options"
 
 	"github.com/openkruise/kruise-state-metrics/pkg/app"
