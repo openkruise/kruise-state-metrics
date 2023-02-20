@@ -1,7 +1,7 @@
 # Image URL to use all building/pushing image targets
 IMG ?= openkruise/kruise-state-metrics:test
 # Platforms to build the image for
-PLATFORMS ?= linux/amd64,linux/arm64,linux/arm
+PLATFORMS ?= linux/amd64,linux/arm64
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -41,7 +41,7 @@ docker-push:
 
 # Build and push the multiarchitecture docker images and manifest.
 docker-multiarch:
-	docker buildx build --pull --no-cache --platform=$(PLATFORMS) --push . -t $(IMG)
+	docker buildx build -f ./Dockerfile_multiarch --pull --no-cache --platform=$(PLATFORMS) --push . -t $(IMG)
 
 deploy: kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	cd deploy && $(KUSTOMIZE) edit set image kruise-state-metrics=${IMG}
