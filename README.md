@@ -22,3 +22,36 @@ Prometheus client endpoint. You can also open `/metrics` in a browser to see
 the raw metrics. Note that the metrics exposed on the `/metrics` endpoint
 reflect the current state of OpenKruise objects in the Kubernetes cluster.
 When the objects are deleted they are no longer visible on the `/metrics` endpoint.
+
+# Installation
+
+## Install with helm
+
+kruise-state-metrics can be simply installed by helm v3.5+, which is a simple command-line tool and you can get it from [here](https://github.com/helm/helm/releases).
+
+```bash
+# Firstly add openkruise charts repository if you haven't do this.
+$ helm repo add openkruise https://openkruise.github.io/charts/
+
+# [Optional]
+$ helm repo update
+
+# Install the latest version.
+$ helm install openkruise/kruise-state-metrics --version 0.1.0
+```
+
+## Optional: download charts manually
+
+If you have problem with connecting to `https://openkruise.github.io/charts/` in production, you might need to download the chart from [here](https://github.com/openkruise/charts/releases) manually and install or upgrade with it.
+
+```bash
+$ helm install/upgrade kruise-state-metrics /PATH/TO/CHART
+```
+
+# Metrics Documentation
+See the [`docs`](docs) directory for more information on the exposed metrics.
+
+# Usage
+See the [`examples`](examples) directory for example grafana dashboard that use metrics exposed by kruise-state-metrics
+
+

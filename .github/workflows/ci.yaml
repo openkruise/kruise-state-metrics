@@ -12,13 +12,13 @@ on:
 
 env:
   # Common versions
-  GO_VERSION: '1.16'
-  GOLANGCI_VERSION: 'v1.42'
+  GO_VERSION: '1.18'
+  GOLANGCI_VERSION: 'v1.51'
 
 jobs:
 
   golangci-lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,16 +35,13 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: ${{ runner.os }}-go-
       - name: Lint golang code
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v3.5.0
         with:
           version: ${{ env.GOLANGCI_VERSION }}
           args: --verbose
-          skip-pkg-cache: true
-          mod: readonly
-
   ci-build:
     name: ci-build
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
