@@ -12,18 +12,17 @@ COPY go.sum go.sum
 COPY main.go main.go
 COPY internal/ internal/
 COPY pkg/ pkg/
-COPY vendor/ vendor/
 
 # Build
 ARG TARGETOS
 ARG TARGETARCH
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 GO111MODULE=on go build -mod=vendor -a -o kruise-state-metrics main.go
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 GO111MODULE=on go build  -a -o kruise-state-metrics main.go
 
 ARG BASE_IMAGE
 ARG BASE_IMAGE_VERION
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERION}
 
-RUN apk add --no-cache ca-certificates=~20220614-r4 bash=~5.2.15-r0 expat=~2.5.0-r0 \
+RUN apk --no-cache add ca-certificates &&  update-ca-certificates \
     && rm -rf /var/cache/apk/*
 
 WORKDIR /
