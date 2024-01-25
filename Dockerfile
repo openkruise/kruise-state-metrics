@@ -9,10 +9,9 @@ COPY go.sum go.sum
 COPY main.go main.go
 COPY internal/ internal/
 COPY pkg/ pkg/
-COPY vendor/ vendor/
 
 # Build
-RUN CGO_ENABLED=0 GO111MODULE=on go build -mod=vendor -a -o kruise-state-metrics main.go
+RUN CGO_ENABLED=0 GO111MODULE=on go build -a -o kruise-state-metrics main.go
 
 # Use Ubuntu 20.04 LTS as base image to package the binary
 FROM ubuntu:focal
