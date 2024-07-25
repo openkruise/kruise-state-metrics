@@ -253,7 +253,11 @@ func statefulSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) [
 			wrapStatefulSetFunc(func(cs *v1beta1.StatefulSet) *metric.Family {
 				ms := make([]*metric.Metric, len(cs.Spec.ReserveOrdinals))
 				for i, m := range cs.Spec.ReserveOrdinals {
-					ms[i].Value = float64(m)
+					ms[i] = &metric.Metric{
+						Value:       float64(m),
+						LabelKeys:   []string{},
+						LabelValues: []string{},
+					}
 				}
 
 				return &metric.Family{
