@@ -217,10 +217,14 @@ func broadcastJobMetricFamilies(allowAnnotationsList, allowLabelsList []string) 
 			metric.Gauge,
 			"",
 			wrapBroadcastJobFunc(func(bj *v1alpha1.BroadcastJob) *metric.Family {
+				value := 0.0
+				if bj != nil && bj.Spec.CompletionPolicy.ActiveDeadlineSeconds != nil {
+					value = float64(*bj.Spec.CompletionPolicy.ActiveDeadlineSeconds)
+				}
 				return &metric.Family{
 					Metrics: []*metric.Metric{
 						{
-							Value: float64(*bj.Spec.CompletionPolicy.ActiveDeadlineSeconds),
+							Value: value,
 						},
 					},
 				}
