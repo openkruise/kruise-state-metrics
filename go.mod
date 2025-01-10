@@ -2,8 +2,6 @@ module github.com/openkruise/kruise-state-metrics
 
 go 1.21
 
-toolchain go1.22.3
-
 require (
 	github.com/google/go-cmp v0.6.0
 	github.com/oklog/run v1.1.0
