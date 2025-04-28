@@ -21,7 +21,6 @@ import (
 
 	"github.com/openkruise/kruise-api/apps/v1beta1"
 
-	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -30,6 +29,8 @@ import (
 
 	"k8s.io/kube-state-metrics/v2/pkg/metric"
 	generator "k8s.io/kube-state-metrics/v2/pkg/metric_generator"
+
+	kruiseclientset "github.com/openkruise/kruise-api/client/clientset/versioned"
 )
 
 var (
@@ -163,11 +164,9 @@ func statefulSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) [
 					conditionMetrics := addConditionMetrics(cs.Status)
 
 					for j, m := range conditionMetrics {
-						metric := m
-
-						metric.LabelKeys = []string{"condition", "status"}
-						metric.LabelValues = append([]string{string(cs.Type)}, metric.LabelValues...)
-						ms[i*len(conditionStatuses)+j] = metric
+						m.LabelKeys = []string{"condition", "status"}
+						m.LabelValues = append([]string{string(cs.Type)}, m.LabelValues...)
+						ms[i*len(conditionStatuses)+j] = m
 					}
 				}
 
@@ -251,13 +250,14 @@ func statefulSetMetricFamilies(allowAnnotationsList, allowLabelsList []string) [
 			metric.Gauge,
 			"",
 			wrapStatefulSetFunc(func(cs *v1beta1.StatefulSet) *metric.Family {
-				ms := make([]*metric.Metric, len(cs.Spec.ReserveOrdinals))
-				for i, m := range cs.Spec.ReserveOrdinals {
-					ms[i] = &metric.Metric{
+				reservedOrdinals := GetReserveOrdinalIntSet(cs.Spec.ReserveOrdinals)
+				var ms []*metric.Metric
+				for m := range reservedOrdinals {
+					ms = append(ms, &metric.Metric{
 						Value:       float64(m),
 						LabelKeys:   []string{},
 						LabelValues: []string{},
-					}
+					})
 				}
 
 				return &metric.Family{

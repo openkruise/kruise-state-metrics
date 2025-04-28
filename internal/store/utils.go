@@ -21,9 +21,13 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/apimachinery/pkg/util/sets"
+	"k8s.io/klog/v2"
 
 	"k8s.io/kube-state-metrics/v2/pkg/metric"
 	"k8s.io/kube-state-metrics/v2/pkg/options"
@@ -147,4 +151,44 @@ func createPrometheusLabelKeysValues(prefix string, allKubeData map[string]strin
 		}
 	}
 	return kubeMapToPrometheusLabels(prefix, allowedKubeData)
+}
+
+// GetReserveOrdinalIntSet returns a set of ints from parsed reserveOrdinal
+func GetReserveOrdinalIntSet(r []intstr.IntOrString) sets.Set[int] {
+	values := sets.New[int]()
+	for _, elem := range r {
+		if elem.Type == intstr.Int {
+			values.Insert(int(elem.IntVal))
+		} else {
+			start, end, err := ParseRange(elem.StrVal)
+			if err != nil {
+				klog.ErrorS(err, "invalid range reserveOrdinal found, an empty slice will be returned", "reserveOrdinal", elem.StrVal)
+				return nil
+			}
+			for i := start; i <= end; i++ {
+				values.Insert(i)
+			}
+		}
+	}
+	return values
+}
+
+// ParseRange parses the start and end value from a string like "1-3"
+func ParseRange(s string) (start int, end int, err error) {
+	split := strings.Split(s, "-")
+	if len(split) != 2 {
+		return 0, 0, fmt.Errorf("invalid range %s", s)
+	}
+	start, err = strconv.Atoi(split[0])
+	if err != nil {
+		return
+	}
+	end, err = strconv.Atoi(split[1])
+	if err != nil {
+		return
+	}
+	if start > end {
+		return 0, 0, fmt.Errorf("invalid range %s", s)
+	}
+	return
 }
